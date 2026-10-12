@@ -67,7 +67,7 @@ const db = new sqlite3.Database('./portfolio.db', (err) => {
             category TEXT,
             image_url TEXT
         )`);
-        
+
         db.run(`CREATE TABLE IF NOT EXISTS videos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
@@ -109,10 +109,10 @@ app.get('/api/portfolio', (req, res) => {
 app.post('/api/portfolio', verifyAdmin, upload.single('image'), (req, res) => {
     const { title, category } = req.body;
     const imageUrl = req.file ? '/uploads/' + req.file.filename : '';
-    
-    db.run('INSERT INTO portfolio (title, category, image_url) VALUES (?, ?, ?)', 
-        [title, category, imageUrl], 
-        function(err) {
+
+    db.run('INSERT INTO portfolio (title, category, image_url) VALUES (?, ?, ?)',
+        [title, category, imageUrl],
+        function (err) {
             if (err) return res.status(500).json({ error: err.message });
             res.json({ id: this.lastID, title, category, image_url: imageUrl });
         }
@@ -121,7 +121,7 @@ app.post('/api/portfolio', verifyAdmin, upload.single('image'), (req, res) => {
 
 app.delete('/api/portfolio/:id', verifyAdmin, (req, res) => {
     const id = req.params.id;
-    db.run('DELETE FROM portfolio WHERE id = ?', [id], function(err) {
+    db.run('DELETE FROM portfolio WHERE id = ?', [id], function (err) {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ deleted: this.changes });
     });
@@ -138,10 +138,10 @@ app.get('/api/videos', (req, res) => {
 app.post('/api/videos', verifyAdmin, upload.single('thumbnail'), (req, res) => {
     const { title, category, video_url } = req.body;
     const thumbnailUrl = req.file ? '/uploads/' + req.file.filename : '';
-    
-    db.run('INSERT INTO videos (title, category, video_url, thumbnail_url) VALUES (?, ?, ?, ?)', 
-        [title, category, video_url, thumbnailUrl], 
-        function(err) {
+
+    db.run('INSERT INTO videos (title, category, video_url, thumbnail_url) VALUES (?, ?, ?, ?)',
+        [title, category, video_url, thumbnailUrl],
+        function (err) {
             if (err) return res.status(500).json({ error: err.message });
             res.json({ id: this.lastID, title, category, video_url, thumbnail_url: thumbnailUrl });
         }
@@ -150,7 +150,7 @@ app.post('/api/videos', verifyAdmin, upload.single('thumbnail'), (req, res) => {
 
 app.delete('/api/videos/:id', verifyAdmin, (req, res) => {
     const id = req.params.id;
-    db.run('DELETE FROM videos WHERE id = ?', [id], function(err) {
+    db.run('DELETE FROM videos WHERE id = ?', [id], function (err) {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ deleted: this.changes });
     });

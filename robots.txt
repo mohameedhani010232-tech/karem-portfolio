@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mohameedhani010232-tech.github.io/karem-portfolio/sitemap.xml
