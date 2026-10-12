@@ -1,0 +1,21 @@
+{
+  "name": "karem_portfolio",
+  "version": "1.0.0",
+  "description": "- بيئة خادم محلي مثل XAMPP أو WAMP. - PHP 8+ - MySQL",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "multer": "^2.4.0",
+    "socket.io": "^4.8.4",
+    "sqlite3": "^6.0.1"
+  }
+}
