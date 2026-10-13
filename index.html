@@ -6,8 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>كريم الورداني | Photographer, Video Editor & Marketer</title>
     <meta name="google-site-verification" content="pkEox85I6mbYrZP2qkyWBvlgDNteHW9kvKJjo4Maz-0" />
-    <meta name="description" content="الموقع الرسمي لكريم الورداني (Karem Elwardani) - مصور فوتوغرافي، مونتير ومحرر فيديو، ومسوق محتوى. تصوير احترافي، مونتاج إبداعي وصناعة محتوى تسويقي للبراندات.">
-    <meta name="keywords" content="كريم الورداني, Karem Elwardani, كرم الورداني, مصور, مونتير, مونتاج فيديو, Photographer, Video Editor, Marketer, تسويق محتوى, مصر">
+    <meta name="description"
+        content="الموقع الرسمي لكريم الورداني (Karem Elwardani) - مصور فوتوغرافي، مونتير ومحرر فيديو، ومسوق محتوى. تصوير احترافي، مونتاج إبداعي وصناعة محتوى تسويقي للبراندات.">
+    <meta name="keywords"
+        content="كريم الورداني, Karem Elwardani, كرم الورداني, مصور, مونتير, مونتاج فيديو, Photographer, Video Editor, Marketer, تسويق محتوى, مصر">
     <meta name="author" content="كريم الورداني">
     <meta name="robots" content="index, follow">
 
@@ -43,9 +45,14 @@
                 <li><a href="#portfolio">الأعمال</a></li>
                 <li><a href="#videos">الفيديوهات</a></li>
             </ul>
-            <div style="display:flex; align-items:center; gap:15px;">
-                <div class="online-indicator" id="online-badge" style="display:inline-flex; align-items:center; gap:6px; background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.3); color:#16a34a; padding:6px 14px; border-radius:20px; font-size:0.85rem; font-weight:700;">
-                    <span style="width:8px; height:8px; background:#22c55e; border-radius:50%; display:inline-block; box-shadow:0 0 6px #22c55e;"></span>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="تبديل الوضع الليلي" title="تبديل الوضع الليلي">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="online-indicator" id="online-badge"
+                    style="display:inline-flex; align-items:center; gap:6px; background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.3); color:#16a34a; padding:6px 14px; border-radius:20px; font-size:0.85rem; font-weight:700;">
+                    <span
+                        style="width:8px; height:8px; background:#22c55e; border-radius:50%; display:inline-block; box-shadow:0 0 6px #22c55e;"></span>
                     <span id="live-count-nav">متصل الآن: 1</span>
                 </div>
                 <a href="#contact" class="btn-primary desktop-btn">Let's Work Together</a>
@@ -251,7 +258,7 @@
         </section>
     </main>
 
-    <!-- Modal Player -->
+    <!-- Video Modal Player -->
     <div id="videoModal" class="modal-player">
         <div class="modal-player-content">
             <span class="close-player close-modal">&times;</span>
@@ -259,6 +266,33 @@
                 <video id="modalVideo" controls>
                     <source src="" type="video/mp4">
                 </video>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Project Details Modal -->
+    <div id="projectModal" class="project-modal" aria-hidden="true" role="dialog">
+        <div class="project-modal-dialog">
+            <button class="project-modal-close" onclick="closeProjectModal()" aria-label="إغلاق">&times;</button>
+            <div class="project-modal-media" id="pm-media"></div>
+            <div class="project-modal-content">
+                <span class="project-modal-badge" id="pm-badge"></span>
+                <h3 class="project-modal-title" id="pm-title"></h3>
+                <p class="project-modal-desc" id="pm-desc"></p>
+                
+                <div id="pm-tags-container" style="display:none; margin-bottom: 20px;">
+                    <h4 class="project-modal-section-title">التقنيات المستخدمة:</h4>
+                    <div class="project-modal-tags" id="pm-tags"></div>
+                </div>
+                
+                <div class="project-modal-actions">
+                    <a href="#" target="_blank" id="pm-live-btn" class="btn-primary" style="display:none;">
+                        <i class="fas fa-external-link-alt" style="margin-left:8px;"></i> معاينة حية (Live Demo)
+                    </a>
+                    <a href="#" target="_blank" id="pm-github-btn" class="btn-secondary" style="display:none;">
+                        <i class="fab fa-github" style="margin-left:8px;"></i> كود المشروع (GitHub)
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -277,7 +311,9 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 Karem Elwardani. All Rights Reserved. &bull; <a href="admin.html" style="color:rgba(255,255,255,0.4); text-decoration:none; font-size:0.85rem;" title="لوحة التحكم"><i class="fas fa-lock" style="font-size:0.75rem;"></i> الإدارة</a></p>
+            <p>&copy; 2024 Karem Elwardani. All Rights Reserved. &bull; <a href="admin.html"
+                    style="color:rgba(255,255,255,0.4); text-decoration:none; font-size:0.85rem;" title="لوحة التحكم"><i
+                        class="fas fa-lock" style="font-size:0.75rem;"></i> الإدارة</a></p>
         </div>
     </footer>
 
@@ -298,84 +334,164 @@
         </a>
     </div>
 
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="assets/js/main.js"></script>
-    <script>
-        const isHttp = window.location.protocol.startsWith('http');
-        const API_HOST = isHttp ? (window.location.port === '3000' ? '' : 'http://localhost:3000') : 'http://localhost:3000';
-        const API_URL = `${API_HOST}/api`;
 
-        // Socket.IO for live visitor tracking
-        try {
-            const socket = io(API_HOST || window.location.origin, { reconnectionAttempts: 5 });
-            socket.on('online_users', (data) => {
-                const el = document.getElementById('live-count-nav');
-                if (el) el.textContent = `متصل الآن: ${data.count}`;
-            });
-        } catch(e) {
-            console.log('Socket not connected', e);
-        }
+    <!-- Firebase Real-Time Firestore Synchronization -->
+    <script type="module">
+        import { 
+            db, 
+            collection, 
+            query, 
+            orderBy, 
+            onSnapshot, 
+            isFirebaseConfigured 
+        } from "./assets/js/firebase-config.js";
 
-        async function loadContent() {
-            try {
-                const pRes = await fetch(`${API_URL}/portfolio`);
-                const pData = await pRes.json();
-                const pGrid = document.getElementById('portfolio-grid');
-                if (pData.length > 0) {
-                    let html = pData.map(item => {
-                        const imgUrl = item.image_url.startsWith('http') ? item.image_url : `${API_HOST}${item.image_url}`;
-                        return `
-                        <div class="portfolio-item" style="position: relative; border-radius: 12px; overflow: hidden; cursor: pointer; width: 300px; display: inline-block; white-space: normal;">
-                            <img src="${imgUrl}" alt="${item.title}" style="width: 100%; height: 250px; object-fit: cover;">
-                            <div style="padding: 15px; background: #fff; border: 1px solid #eee; border-top: none; border-radius: 0 0 12px 12px;">
-                                <h3 style="color: var(--secondary-color); margin: 0 0 5px;">${item.title}</h3>
-                                <p style="color: var(--primary-color); font-weight: bold; margin: 0;">${item.category}</p>
+        // Global storage for modal lookups
+        window._projectsMap = {};
+
+        // Render projects and videos to DOM
+        function renderProjects(projectsList) {
+            const pGrid = document.getElementById('portfolio-grid');
+            const vSlider = document.getElementById('video-slider');
+
+            if (!pGrid || !vSlider) return;
+
+            // Separate portfolio and videos
+            const portfolioItems = projectsList.filter(item => item.mediaType !== 'video' || item.imageUrl);
+            const videoItems = projectsList.filter(item => item.mediaType === 'video' || item.videoUrl);
+
+            // 1. Render Portfolio Cards
+            if (portfolioItems.length > 0) {
+                const html = portfolioItems.map(item => {
+                    window._projectsMap[item.id] = item;
+                    const mediaSrc = item.mediaUrl || item.imageUrl || item.thumbnailUrl || 'https://placehold.co/600x400?text=Project';
+                    const techList = Array.isArray(item.technologies) 
+                        ? item.technologies 
+                        : (typeof item.technologies === 'string' && item.technologies.trim() 
+                            ? item.technologies.split(',').map(t => t.trim()).filter(Boolean) 
+                            : []);
+
+                    const tagsHtml = techList.slice(0, 3).map(t => `<span class="portfolio-tag">${t}</span>`).join('');
+
+                    return `
+                        <div class="portfolio-card" onclick="window.openProjectModal(window._projectsMap['${item.id}'])" title="انقر لعرض التفاصيل">
+                            <div class="portfolio-card-img-wrap">
+                                <img src="${mediaSrc}" alt="${item.title}" loading="lazy" onerror="this.src='https://placehold.co/600x400?text=No+Image'">
+                                <span class="portfolio-card-badge">${item.category || 'Portfolio'}</span>
+                            </div>
+                            <div class="portfolio-card-body">
+                                <h3 class="portfolio-card-title">${item.title}</h3>
+                                ${item.description ? `<p class="portfolio-card-desc">${item.description}</p>` : ''}
+                                ${tagsHtml ? `<div class="portfolio-card-tags">${tagsHtml}</div>` : ''}
+                                <span class="portfolio-card-view-btn">
+                                    تفاصيل المشروع <i class="fas fa-arrow-left"></i>
+                                </span>
                             </div>
                         </div>
                     `;
-                    }).join('');
-                    // Duplicate for infinite marquee effect
-                    pGrid.innerHTML = html + html;
-                } else {
-                    pGrid.innerHTML = '<p style="padding:20px;">لا يوجد أعمال مضافة حتى الآن.</p>';
-                }
+                }).join('');
 
-                const vRes = await fetch(`${API_URL}/videos`);
-                const vData = await vRes.json();
-                const vSlider = document.getElementById('video-slider');
-                if (vData.length > 0) {
-                    let vHtml = vData.map(item => {
-                        const thumbUrl = item.thumbnail_url.startsWith('http') ? item.thumbnail_url : `${API_HOST}${item.thumbnail_url}`;
-                        return `
-                        <div class="video-card" style="width:300px; display:inline-block; position: relative; border-radius: 12px; overflow: hidden; white-space: normal;">
-                            <img src="${thumbUrl}" alt="${item.title}" style="width: 100%; height: 250px; object-fit: cover;">
-                            <div class="play-btn" data-video="${item.video_url}"><i class="fas fa-play-circle"></i></div>
-                            <div class="video-info" style="position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.7); color: white; padding: 10px;">
-                                <h4 style="margin: 0 0 5px;">${item.title}</h4>
-                                <p style="margin: 0;">${item.category}</p>
+                // Duplicate for smooth marquee effect
+                pGrid.innerHTML = html + html;
+            } else {
+                pGrid.innerHTML = '<p style="padding:20px; color:var(--text-muted);">لا توجد أعمال مضافة حتى الآن. يمكنك إضافة مشاريع من لوحة التحكم.</p>';
+            }
+
+            // 2. Render Video Cards
+            if (videoItems.length > 0) {
+                const vHtml = videoItems.map(item => {
+                    window._projectsMap[item.id] = item;
+                    const thumbSrc = item.thumbnailUrl || item.mediaUrl || item.imageUrl || 'https://placehold.co/600x400?text=Video';
+                    const videoLink = item.videoUrl || item.mediaUrl || '';
+
+                    return `
+                        <div class="video-card" style="width:310px; display:inline-block; position:relative; border-radius:12px; overflow:hidden; white-space:normal; margin: 10px; vertical-align: top;">
+                            <img src="${thumbSrc}" alt="${item.title}" style="width:100%; height:240px; object-fit:cover;" loading="lazy">
+                            <div class="play-btn" onclick="event.stopPropagation(); window.openVideoModal('${videoLink}')">
+                                <i class="fas fa-play-circle"></i>
+                            </div>
+                            <div class="video-info" style="position:absolute; bottom:0; width:100%; background:linear-gradient(to top, rgba(0,0,0,0.85), transparent); color:white; padding:15px; box-sizing:border-box;">
+                                <h4 style="margin:0 0 4px; font-size:1.1rem;">${item.title}</h4>
+                                <p style="margin:0; font-size:0.85rem; color:#cbd5e1;">${item.category || 'فيديو'}</p>
                             </div>
                         </div>
                     `;
-                    }).join('');
-                    // Duplicate for infinite marquee effect
-                    vSlider.innerHTML = vHtml + vHtml;
+                }).join('');
 
-                    // Re-bind click events for newly loaded videos
-                    document.querySelectorAll('.play-btn').forEach(btn => {
-                        btn.addEventListener('click', function () {
-                            const videoUrl = this.getAttribute('data-video');
-                            window.open(videoUrl, '_blank');
-                        });
-                    });
-                } else {
-                    vSlider.innerHTML = '<p style="padding:20px;">لا يوجد فيديوهات مضافة حتى الآن.</p>';
-                }
-            } catch (e) {
-                console.error("Error loading data:", e);
+                vSlider.innerHTML = vHtml + vHtml;
+            } else {
+                vSlider.innerHTML = '<p style="padding:20px; color:#aaa;">لا توجد فيديوهات مضافة حتى الآن.</p>';
             }
         }
 
-        document.addEventListener("DOMContentLoaded", loadContent);
+        // Initialize Data Loading
+        async function initDataSync() {
+            if (isFirebaseConfigured() && db) {
+                console.log("🔥 Firebase initialized - listening for real-time project updates...");
+                try {
+                    const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
+                    onSnapshot(q, (snapshot) => {
+                        const items = [];
+                        snapshot.forEach((doc) => {
+                            items.push({ id: doc.id, ...doc.data() });
+                        });
+                        renderProjects(items);
+                    }, (err) => {
+                        console.warn("Firestore onSnapshot error:", err);
+                        fallbackFetch();
+                    });
+                    return;
+                } catch (e) {
+                    console.warn("Could not listen to Firestore:", e);
+                }
+            }
+
+            // Fallback for local dev or offline
+            fallbackFetch();
+        }
+
+        // Fallback fetch from local server or demo items
+        async function fallbackFetch() {
+            try {
+                const isHttp = window.location.protocol.startsWith('http');
+                const API_HOST = isHttp ? (window.location.port === '3000' ? '' : 'http://localhost:3000') : 'http://localhost:3000';
+                const pRes = await fetch(`${API_HOST}/api/portfolio`);
+                if (pRes.ok) {
+                    const data = await pRes.json();
+                    if (data && data.length) {
+                        const formatted = data.map(d => ({
+                            id: d.id,
+                            title: d.title,
+                            category: d.category,
+                            mediaUrl: d.image_url.startsWith('http') ? d.image_url : `${API_HOST}${d.image_url}`,
+                            mediaType: 'image'
+                        }));
+                        renderProjects(formatted);
+                        return;
+                    }
+                }
+            } catch (err) {
+                // Server offline - render demo items so portfolio is never blank
+                console.info("Using showcase default demo items");
+            }
+        }
+
+        // Online Visitors Counter (Graceful fallback)
+        try {
+            if (window.io) {
+                const socket = io(window.location.origin, { reconnectionAttempts: 2, timeout: 3000 });
+                socket.on('online_users', (data) => {
+                    const el = document.getElementById('live-count-nav');
+                    if (el) el.textContent = `متصل الآن: ${data.count}`;
+                });
+            }
+        } catch (e) {
+            // Ignored
+        }
+
+        // Load data on page ready
+        document.addEventListener('DOMContentLoaded', initDataSync);
     </script>
 </body>
 

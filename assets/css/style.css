@@ -6,8 +6,11 @@
     --secondary-color: #0B1F3A;
     --bg-color: #ffffff;
     --bg-light: #F5F9FF;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
     --text-main: #222222;
     --text-muted: #666666;
+    --modal-bg: #ffffff;
     --white: #ffffff;
     --radius: 12px;
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
@@ -21,8 +24,11 @@ body.dark-mode {
     --secondary-color: #E3F2FD;
     --bg-color: #0B1F3A;
     --bg-light: #071426;
+    --card-bg: #0f233d;
+    --border-color: rgba(255, 255, 255, 0.12);
     --text-main: #F5F9FF;
     --text-muted: #B0BEC5;
+    --modal-bg: #0d1e34;
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.6);
 }
@@ -163,6 +169,18 @@ body.dark-mode .section-title {
     z-index: 1000;
     transition: var(--transition);
     padding: 20px 0;
+}
+
+.navbar.scrolled {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 12px 0;
+}
+
+body.dark-mode .navbar.scrolled {
+    background: rgba(11, 31, 58, 0.95);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .nav-container {
@@ -688,4 +706,312 @@ body.dark-mode .service-card h3 {
 
 .marquee-content:hover {
     animation-play-state: paused;
+}
+
+/* ============================================================================
+   THEME TOGGLE BUTTON
+   ============================================================================ */
+.theme-toggle-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-color);
+    background: var(--bg-light);
+    color: var(--text-main);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    transition: var(--transition);
+}
+
+.theme-toggle-btn:hover {
+    transform: rotate(18deg) scale(1.08);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px rgba(25, 118, 210, 0.25);
+}
+
+/* ============================================================================
+   PROJECT CARDS (PORTFOLIO GRID)
+   ============================================================================ */
+.portfolio-card {
+    position: relative;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    width: 320px;
+    display: inline-block;
+    white-space: normal;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    text-align: right;
+    vertical-align: top;
+    margin: 10px;
+}
+
+.portfolio-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--primary-color);
+}
+
+.portfolio-card-img-wrap {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    background: #0f172a;
+}
+
+.portfolio-card-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.portfolio-card:hover .portfolio-card-img-wrap img {
+    transform: scale(1.08);
+}
+
+.portfolio-card-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(11, 31, 58, 0.85);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    backdrop-filter: blur(4px);
+}
+
+.portfolio-card-body {
+    padding: 18px;
+}
+
+.portfolio-card-title {
+    color: var(--secondary-color);
+    font-size: 1.2rem;
+    margin: 0 0 8px;
+    font-weight: 700;
+}
+
+body.dark-mode .portfolio-card-title {
+    color: var(--white);
+}
+
+.portfolio-card-desc {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin: 0 0 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.portfolio-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.portfolio-tag {
+    background: var(--bg-light);
+    color: var(--primary-color);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.portfolio-card-view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.portfolio-card:hover .portfolio-card-view-btn {
+    color: var(--primary-dark);
+    transform: translateX(-4px);
+}
+
+/* ============================================================================
+   INTERACTIVE PROJECT MODAL
+   ============================================================================ */
+.project-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99999;
+    background: rgba(7, 20, 38, 0.8);
+    backdrop-filter: blur(8px);
+    padding: 20px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+}
+
+.project-modal.active {
+    display: flex;
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+.project-modal-dialog {
+    background: var(--modal-bg);
+    color: var(--text-main);
+    width: 100%;
+    max-width: 720px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-color);
+    position: relative;
+    animation: modalSlideUp 0.35s ease-out;
+    margin: auto;
+    text-align: right;
+}
+
+.project-modal-close {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 38px;
+    height: 38px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    font-size: 1.3rem;
+    z-index: 10;
+    transition: var(--transition);
+}
+
+.project-modal-close:hover {
+    background: #ef4444;
+    transform: rotate(90deg);
+}
+
+.project-modal-media {
+    width: 100%;
+    max-height: 420px;
+    background: #000;
+    position: relative;
+    overflow: hidden;
+}
+
+.project-modal-media img {
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+    display: block;
+}
+
+.project-modal-media video {
+    width: 100%;
+    max-height: 420px;
+    display: block;
+    background: #000;
+}
+
+.project-modal-content {
+    padding: 28px;
+}
+
+.project-modal-badge {
+    display: inline-block;
+    background: rgba(25, 118, 210, 0.12);
+    color: var(--primary-color);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.project-modal-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--secondary-color);
+    margin: 0 0 15px;
+}
+
+body.dark-mode .project-modal-title {
+    color: var(--white);
+}
+
+.project-modal-desc {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text-muted);
+    margin-bottom: 22px;
+    white-space: pre-line;
+}
+
+.project-modal-section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+    margin: 0 0 8px;
+}
+
+body.dark-mode .project-modal-section-title {
+    color: var(--white);
+}
+
+.project-modal-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.project-modal-tag {
+    background: var(--bg-light);
+    color: var(--primary-color);
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.project-modal-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+    from { transform: translateY(30px) scale(0.97); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
 }
