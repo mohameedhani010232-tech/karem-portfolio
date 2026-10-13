@@ -46,15 +46,8 @@
                 <li><a href="#videos">الفيديوهات</a></li>
             </ul>
             <div style="display:flex; align-items:center; gap:12px;">
-                <button id="theme-toggle" class="theme-toggle-btn" aria-label="تبديل الوضع الليلي" title="تبديل الوضع الليلي">
-                    <i class="fas fa-moon"></i>
-                </button>
-                <div class="online-indicator" id="online-badge"
-                    style="display:inline-flex; align-items:center; gap:6px; background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.3); color:#16a34a; padding:6px 14px; border-radius:20px; font-size:0.85rem; font-weight:700;">
-                    <span
-                        style="width:8px; height:8px; background:#22c55e; border-radius:50%; display:inline-block; box-shadow:0 0 6px #22c55e;"></span>
-                    <span id="live-count-nav">متصل الآن: 1</span>
-                </div>
+
+
                 <a href="#contact" class="btn-primary desktop-btn">Let's Work Together</a>
             </div>
         </div>
@@ -205,55 +198,7 @@
                 <h2 class="section-title reveal-up">خلينا نشتغل سوا</h2>
                 <p class="section-subtitle reveal-up">عندك فكرة أو مشروع؟ خلينا نحوله لمحتوى يخدم البراند.</p>
 
-                <div style="display:flex; gap:40px; flex-wrap:wrap;">
-                    <div class="contact-info reveal-right" style="flex:1; min-width:300px;">
-                        <div style="background:var(--bg-light); padding:40px; border-radius:15px; text-align:center;">
-                            <i class="fas fa-phone-alt"
-                                style="font-size:3rem; color:var(--primary-color); margin-bottom:20px;"></i>
-                            <h3>تواصل معي مباشرة</h3>
-                            <p style="font-size:1.5rem; font-weight:bold;">01156978977</p>
-                            <div
-                                style="margin-top:20px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-                                <a href="tel:+201156978977" class="btn-primary">اتصل بي</a>
-                                <a href="https://wa.me/201156978977" target="_blank" class="btn-whatsapp"><i
-                                        class="fab fa-whatsapp"></i> WhatsApp</a>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="contact-form-container reveal-left" style="flex:2; min-width:300px;">
-                        <!-- JS Alert added to form submission since there is no backend -->
-                        <form action="#" onsubmit="alert('تم إرسال الرسالة بنجاح! (نسخة العرض فقط)'); return false;"
-                            class="contact-form">
-                            <div class="form-row">
-                                <input type="text" name="name" placeholder="الاسم *" required>
-                            </div>
-                            <div class="form-row">
-                                <input type="email" name="email" placeholder="البريد الإلكتروني *" required>
-                            </div>
-                            <div class="form-row">
-                                <input type="text" name="phone" placeholder="رقم الهاتف">
-                            </div>
-                            <div class="form-row">
-                                <input type="text" name="company" placeholder="اسم الشركة / البراند">
-                            </div>
-                            <div class="form-row">
-                                <select name="service" required>
-                                    <option value="">اختر الخدمة المطلوبة...</option>
-                                    <option value="Photography">Photography</option>
-                                    <option value="Video Editing">Video Editing</option>
-                                    <option value="Marketing">Marketing</option>
-                                    <option value="Other">أخرى</option>
-                                </select>
-                            </div>
-                            <div class="form-row">
-                                <textarea name="message" rows="5" placeholder="تفاصيل المشروع أو الرسالة *"
-                                    required></textarea>
-                            </div>
-                            <button type="submit" class="btn-primary" style="width:100%;">إرسال الطلب</button>
-                        </form>
-                    </div>
-                </div>
             </div>
         </section>
     </main>
@@ -279,12 +224,12 @@
                 <span class="project-modal-badge" id="pm-badge"></span>
                 <h3 class="project-modal-title" id="pm-title"></h3>
                 <p class="project-modal-desc" id="pm-desc"></p>
-                
+
                 <div id="pm-tags-container" style="display:none; margin-bottom: 20px;">
                     <h4 class="project-modal-section-title">التقنيات المستخدمة:</h4>
                     <div class="project-modal-tags" id="pm-tags"></div>
                 </div>
-                
+
                 <div class="project-modal-actions">
                     <a href="#" target="_blank" id="pm-live-btn" class="btn-primary" style="display:none;">
                         <i class="fas fa-external-link-alt" style="margin-left:8px;"></i> معاينة حية (Live Demo)
@@ -336,16 +281,15 @@
 
     <script src="assets/js/main.js"></script>
 
-    <!-- Firebase Real-Time Firestore Synchronization -->
+    <!-- مكتبة Supabase الرسمية -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Supabase Cloud Synchronization -->
     <script type="module">
         import { 
-            db, 
-            collection, 
-            query, 
-            orderBy, 
-            onSnapshot, 
-            isFirebaseConfigured 
-        } from "./assets/js/firebase-config.js";
+            getSupabaseClient, 
+            isSupabaseConfigured 
+        } from "./assets/js/supabase-config.js";
 
         // Global storage for modal lookups
         window._projectsMap = {};
@@ -357,22 +301,15 @@
 
             if (!pGrid || !vSlider) return;
 
-            // Separate portfolio and videos
-            const portfolioItems = projectsList.filter(item => item.mediaType !== 'video' || item.imageUrl);
-            const videoItems = projectsList.filter(item => item.mediaType === 'video' || item.videoUrl);
+            // Separate portfolio (images) and videos
+            const portfolioItems = (projectsList || []).filter(item => item.media_type !== 'video' && !item.video_url);
+            const videoItems = (projectsList || []).filter(item => item.media_type === 'video' || item.video_url);
 
             // 1. Render Portfolio Cards
             if (portfolioItems.length > 0) {
                 const html = portfolioItems.map(item => {
                     window._projectsMap[item.id] = item;
-                    const mediaSrc = item.mediaUrl || item.imageUrl || item.thumbnailUrl || 'https://placehold.co/600x400?text=Project';
-                    const techList = Array.isArray(item.technologies) 
-                        ? item.technologies 
-                        : (typeof item.technologies === 'string' && item.technologies.trim() 
-                            ? item.technologies.split(',').map(t => t.trim()).filter(Boolean) 
-                            : []);
-
-                    const tagsHtml = techList.slice(0, 3).map(t => `<span class="portfolio-tag">${t}</span>`).join('');
+                    const mediaSrc = item.media_url || 'https://placehold.co/600x400?text=Project';
 
                     return `
                         <div class="portfolio-card" onclick="window.openProjectModal(window._projectsMap['${item.id}'])" title="انقر لعرض التفاصيل">
@@ -382,10 +319,8 @@
                             </div>
                             <div class="portfolio-card-body">
                                 <h3 class="portfolio-card-title">${item.title}</h3>
-                                ${item.description ? `<p class="portfolio-card-desc">${item.description}</p>` : ''}
-                                ${tagsHtml ? `<div class="portfolio-card-tags">${tagsHtml}</div>` : ''}
                                 <span class="portfolio-card-view-btn">
-                                    تفاصيل المشروع <i class="fas fa-arrow-left"></i>
+                                    تفاصيل العمل <i class="fas fa-arrow-left"></i>
                                 </span>
                             </div>
                         </div>
@@ -395,15 +330,15 @@
                 // Duplicate for smooth marquee effect
                 pGrid.innerHTML = html + html;
             } else {
-                pGrid.innerHTML = '<p style="padding:20px; color:var(--text-muted);">لا توجد أعمال مضافة حتى الآن. يمكنك إضافة مشاريع من لوحة التحكم.</p>';
+                pGrid.innerHTML = '<p style="padding:20px; color:var(--text-muted);">لا توجد أعمال مضافة حتى الآن. يمكنك إضافة أعمالك من لوحة التحكم.</p>';
             }
 
             // 2. Render Video Cards
             if (videoItems.length > 0) {
                 const vHtml = videoItems.map(item => {
                     window._projectsMap[item.id] = item;
-                    const thumbSrc = item.thumbnailUrl || item.mediaUrl || item.imageUrl || 'https://placehold.co/600x400?text=Video';
-                    const videoLink = item.videoUrl || item.mediaUrl || '';
+                    const thumbSrc = item.media_url || 'https://placehold.co/600x400?text=Video';
+                    const videoLink = item.video_url || item.media_url || '';
 
                     return `
                         <div class="video-card" style="width:310px; display:inline-block; position:relative; border-radius:12px; overflow:hidden; white-space:normal; margin: 10px; vertical-align: top;">
@@ -427,67 +362,48 @@
 
         // Initialize Data Loading
         async function initDataSync() {
-            if (isFirebaseConfigured() && db) {
-                console.log("🔥 Firebase initialized - listening for real-time project updates...");
+            const supabase = getSupabaseClient();
+            if (supabase && isSupabaseConfigured()) {
+                console.log("⚡ Supabase initialized - listening for live updates...");
                 try {
-                    const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
-                    onSnapshot(q, (snapshot) => {
-                        const items = [];
-                        snapshot.forEach((doc) => {
-                            items.push({ id: doc.id, ...doc.data() });
-                        });
-                        renderProjects(items);
-                    }, (err) => {
-                        console.warn("Firestore onSnapshot error:", err);
-                        fallbackFetch();
-                    });
+                    // Fetch data
+                    await fetchProjects(supabase);
+
+                    // Real-time listener
+                    supabase
+                        .channel('public:projects')
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => {
+                            fetchProjects(supabase);
+                        })
+                        .subscribe();
                     return;
                 } catch (e) {
-                    console.warn("Could not listen to Firestore:", e);
+                    console.warn("Could not load from Supabase:", e);
                 }
             }
 
-            // Fallback for local dev or offline
+            // Fallback default demo data
             fallbackFetch();
         }
 
-        // Fallback fetch from local server or demo items
-        async function fallbackFetch() {
-            try {
-                const isHttp = window.location.protocol.startsWith('http');
-                const API_HOST = isHttp ? (window.location.port === '3000' ? '' : 'http://localhost:3000') : 'http://localhost:3000';
-                const pRes = await fetch(`${API_HOST}/api/portfolio`);
-                if (pRes.ok) {
-                    const data = await pRes.json();
-                    if (data && data.length) {
-                        const formatted = data.map(d => ({
-                            id: d.id,
-                            title: d.title,
-                            category: d.category,
-                            mediaUrl: d.image_url.startsWith('http') ? d.image_url : `${API_HOST}${d.image_url}`,
-                            mediaType: 'image'
-                        }));
-                        renderProjects(formatted);
-                        return;
-                    }
-                }
-            } catch (err) {
-                // Server offline - render demo items so portfolio is never blank
-                console.info("Using showcase default demo items");
+        async function fetchProjects(supabase) {
+            const { data, error } = await supabase
+                .from('projects')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (!error && data) {
+                renderProjects(data);
             }
         }
 
-        // Online Visitors Counter (Graceful fallback)
-        try {
-            if (window.io) {
-                const socket = io(window.location.origin, { reconnectionAttempts: 2, timeout: 3000 });
-                socket.on('online_users', (data) => {
-                    const el = document.getElementById('live-count-nav');
-                    if (el) el.textContent = `متصل الآن: ${data.count}`;
-                });
-            }
-        } catch (e) {
-            // Ignored
+        // Fallback for local demo
+        function fallbackFetch() {
+            const demoItems = [
+                { id: '1', title: 'جلسة تصوير بورتريه', category: 'Photography', media_url: 'imgs/1.jpeg', media_type: 'image' },
+                { id: '2', title: 'تصوير احترافي للبراند', category: 'Commercial', media_url: 'imgs/3.jpeg', media_type: 'image' }
+            ];
+            renderProjects(demoItems);
         }
 
         // Load data on page ready

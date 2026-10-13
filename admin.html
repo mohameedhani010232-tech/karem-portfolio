@@ -4,9 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم السريعة | كريم الورداني</title>
+    <title>لوحة التحكم السحابية | كريم الورداني</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- مكتبة Supabase الرسمية -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary: #1976D2;
@@ -35,7 +37,7 @@
             line-height: 1.6;
         }
 
-        /* Login Overlay */
+        /* شاشة الدخول */
         #login-overlay {
             position: fixed;
             top: 0;
@@ -179,7 +181,7 @@
             font-weight: 600;
         }
 
-        /* Dashboard Container */
+        /* Container */
         .container {
             max-width: 1000px;
             margin: auto;
@@ -245,6 +247,30 @@
             color: #b91c1c;
         }
 
+        /* Banner */
+        .banner {
+            padding: 14px 20px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .banner-info {
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .banner-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
         /* Tabs Nav */
         .tabs-nav {
             display: flex;
@@ -298,7 +324,7 @@
             color: #475569;
         }
 
-        /* Tab Content */
+        /* Tab Panes */
         .tab-pane {
             display: none;
         }
@@ -313,7 +339,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Simple Card */
+        /* Card */
         .card {
             background: white;
             border-radius: var(--radius);
@@ -334,7 +360,7 @@
             padding-bottom: 12px;
         }
 
-        /* Fast Form */
+        /* Forms */
         .simple-form {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -415,7 +441,6 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        /* Progress Bar */
         .upload-status {
             display: none;
             margin-top: 15px;
@@ -574,7 +599,7 @@
 </head>
 
 <body>
-    <!-- 1. شاشة الدخول برقم سري فقط -->
+    <!-- 1. شاشة الدخول برقم سري 112003 -->
     <div id="login-overlay">
         <div class="login-card">
             <div class="login-icon">
@@ -601,11 +626,17 @@
     <div class="container dashboard-hidden" id="admin-dashboard">
         <!-- الشريط العلوي -->
         <div class="top-bar">
-            <h1><i class="fas fa-bolt" style="color: #f59e0b;"></i> إدارة محتوى الموقع | كريم الورداني</h1>
+            <h1><i class="fas fa-bolt" style="color: #f59e0b;"></i> إدارة الموقع | كريم الورداني</h1>
             <div class="top-bar-actions">
                 <a href="index.html" target="_blank"><i class="fas fa-external-link-alt"></i> فتح الموقع</a>
                 <button class="btn-logout" id="logout-btn"><i class="fas fa-sign-out-alt"></i> خروج</button>
             </div>
+        </div>
+
+        <!-- حالة الاتصال بقاعدة البيانات -->
+        <div id="db-status-banner" class="banner banner-info">
+            <i class="fas fa-database"></i>
+            <span id="db-status-text">جاري فحص الاتصال بقاعدة بيانات Supabase...</span>
         </div>
 
         <!-- تبويبات الفصل بين الصور والفيديوهات -->
@@ -637,7 +668,7 @@
                         <label>التصنيف *</label>
                         <select id="photo-category" required>
                             <option value="Photography">Photography (تصوير فوتوغرافي)</option>
-                            <option value="Commercial">Commercial (تصوير إعلانات وتجاري)</option>
+                            <option value="Commercial">Commercial (تصوير تجاري)</option>
                             <option value="Fashion">Fashion (أزياء وموديلز)</option>
                             <option value="Products">Products (تصوير منتجات)</option>
                             <option value="Portrait">Portrait (بورتريه)</option>
@@ -645,7 +676,7 @@
                     </div>
 
                     <div class="form-field form-row-full">
-                        <label>اختر الصورة من جهازك * (يتم تصغيرها ورفعها فائق السرعة)</label>
+                        <label>اختر الصورة من جهازك * (يتم ضغطها تلقائياً لسرعة الرفع)</label>
                         <div class="file-upload-box">
                             <i class="fas fa-image" style="font-size:2rem; color:var(--primary); margin-bottom:8px;"></i>
                             <div id="photo-file-label">اضغط هنا لاختيار الصورة أو اسحبها هنا</div>
@@ -739,7 +770,7 @@
         <span id="toast-message">تمت العملية بنجاح</span>
     </div>
 
-    <!-- 1. سكريبت الدخول السريع والفوري بدون أي انتظار -->
+    <!-- سكريبت الدخول السريع (112003) والتبويبات -->
     <script>
         const ADMIN_PIN = "112003";
 
@@ -748,14 +779,14 @@
             const dashboard = document.getElementById('admin-dashboard');
             if (overlay) overlay.classList.add('hidden');
             if (dashboard) dashboard.classList.remove('dashboard-hidden');
-            if (window.initDataListeners) {
-                window.initDataListeners();
+            if (window.initSupabaseData) {
+                window.initSupabaseData();
             } else {
-                window._needsDataInit = true;
+                window._needsSupabaseInit = true;
             }
         }
 
-        // تبديل إظهار كلمة المرور
+        // إظهار وإخفاء الباسورد
         const toggleEye = document.getElementById('toggle-password-eye');
         const passwordInput = document.getElementById('admin-password-input');
         if (toggleEye && passwordInput) {
@@ -766,7 +797,7 @@
             });
         }
 
-        // فحص الجلسة عند فتح الصفحة
+        // فحص الجلسة عند الفتح
         if (sessionStorage.getItem('karem_admin_auth') === ADMIN_PIN) {
             unlockDashboard();
         }
@@ -810,7 +841,7 @@
             });
         }
 
-        // التبديل بين تبويب الصور والفيديوهات
+        // التبديل بين التبويبات
         window.switchTab = (tab) => {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
@@ -824,7 +855,7 @@
             }
         };
 
-        // إظهار التوست
+        // إشعار Toast
         window.showToast = (msg, type = 'success') => {
             const toast = document.getElementById('toast');
             if (!toast) return;
@@ -834,26 +865,29 @@
         };
     </script>
 
-    <!-- 2. السكريبت السحابي لرفع الصور وإدارة Firebase -->
+    <!-- سكريبت Supabase السحابي للرفع والحفظ -->
     <script type="module">
         import { 
-            db, 
-            storage, 
-            collection, 
-            doc, 
-            addDoc, 
-            deleteDoc, 
-            query, 
-            orderBy, 
-            onSnapshot, 
-            serverTimestamp,
-            ref, 
-            uploadBytes, 
-            getDownloadURL,
-            deleteObject
-        } from "./assets/js/firebase-config.js";
+            getSupabaseClient, 
+            isSupabaseConfigured 
+        } from "./assets/js/supabase-config.js";
 
-        // دالة ضغط الصور لتصبح فائقة السرعة (Instant Client-side Compression)
+        const statusBanner = document.getElementById('db-status-banner');
+        const statusText = document.getElementById('db-status-text');
+
+        // تحديث البانر
+        function updateBanner() {
+            if (isSupabaseConfigured()) {
+                statusBanner.className = 'banner banner-info';
+                statusText.innerHTML = `🟢 متصل بقاعدة بيانات <strong>Supabase</strong> السحابية بنجاح. أي إضافة أو حذف تنعكس فورياً.`;
+            } else {
+                statusBanner.className = 'banner banner-warning';
+                statusText.innerHTML = `⚠️ تنبيه: يرجى وضع مفاتيح <strong>Supabase</strong> الخاصة بك في ملف <code style="background:white; padding:2px 6px; border-radius:4px;">assets/js/supabase-config.js</code> لتفعيل الحفظ السحابي.`;
+            }
+        }
+        updateBanner();
+
+        // دالة ضغط الصور الذكية للرفع الفوري السريع
         async function compressImage(file, maxWidth = 1280, quality = 0.8) {
             if (!file.type.startsWith('image/')) return file;
             return new Promise((resolve) => {
@@ -882,7 +916,7 @@
             });
         }
 
-        // معاينة صورة العمل
+        // معاينة الصورة
         const photoFileInput = document.getElementById('photo-file');
         photoFileInput.addEventListener('change', () => {
             const file = photoFileInput.files[0];
@@ -906,9 +940,31 @@
             }
         });
 
-        // 1. إضافة صورة (فائقة السرعة)
+        // رفع ملف إلى Supabase Storage
+        async function uploadToStorage(supabase, file, bucket = 'portfolio') {
+            const cleanName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+            const { data, error } = await supabase.storage
+                .from(bucket)
+                .upload(cleanName, file, { contentType: file.type, upsert: true });
+
+            if (error) throw error;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from(bucket)
+                .getPublicUrl(cleanName);
+
+            return { publicUrl, storagePath: cleanName };
+        }
+
+        // 1. إضافة صورة إلى Supabase
         document.getElementById('photo-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const supabase = getSupabaseClient();
+            if (!supabase) {
+                showToast('يرجى وضع مفاتيح Supabase في ملف supabase-config.js أولاً', 'error');
+                return;
+            }
+
             const title = document.getElementById('photo-title').value.trim();
             const category = document.getElementById('photo-category').value;
             const rawFile = photoFileInput.files[0];
@@ -917,34 +973,32 @@
             const btn = document.getElementById('photo-submit-btn');
             const status = document.getElementById('photo-status');
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> جاري المعالجة والرفع...';
+            btn.innerHTML = '<span class="spinner"></span> جاري الرفع...';
             status.style.display = 'block';
 
             try {
-                // ضغط فوري للصورة لجعل الرفع في ثانية واحدة
-                const compressedFile = await compressImage(rawFile);
-                const fileRef = ref(storage, `photos/${Date.now()}_${compressedFile.name}`);
-                
-                await uploadBytes(fileRef, compressedFile);
-                const downloadUrl = await getDownloadURL(fileRef);
+                // ضغط فوري للصورة
+                const compressed = await compressImage(rawFile);
+                const { publicUrl, storagePath } = await uploadToStorage(supabase, compressed, 'portfolio');
 
-                // حفظ في قاعدة البيانات
-                await addDoc(collection(db, "projects"), {
+                // حفظ في جدول projects
+                const { error: insertErr } = await supabase.from('projects').insert([{
                     title,
                     category,
-                    mediaUrl: downloadUrl,
-                    mediaType: 'image',
-                    storagePath: fileRef.fullPath,
-                    createdAt: serverTimestamp()
-                });
+                    media_url: publicUrl,
+                    media_type: 'image'
+                }]);
+
+                if (insertErr) throw insertErr;
 
                 showToast('تمت إضافة الصورة بنجاح! 📸', 'success');
                 e.target.reset();
                 document.getElementById('photo-preview-box').style.display = 'none';
                 document.getElementById('photo-file-label').textContent = 'اضغط هنا لاختيار الصورة أو اسحبها هنا';
+                loadData();
             } catch (err) {
                 console.error(err);
-                showToast(`خطأ: ${err.message}`, 'error');
+                showToast(`خطأ في الرفع: ${err.message}`, 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-upload"></i> رفع وحفظ الصورة فوراً';
@@ -952,9 +1006,15 @@
             }
         });
 
-        // 2. إضافة فيديو
+        // 2. إضافة فيديو إلى Supabase
         document.getElementById('video-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const supabase = getSupabaseClient();
+            if (!supabase) {
+                showToast('يرجى وضع مفاتيح Supabase في ملف supabase-config.js أولاً', 'error');
+                return;
+            }
+
             const title = document.getElementById('video-title').value.trim();
             const category = document.getElementById('video-category').value;
             const videoUrl = document.getElementById('video-url').value.trim();
@@ -969,31 +1029,28 @@
 
             try {
                 // ضغط صورة الغلاف
-                const compressedThumb = await compressImage(rawThumb);
-                const fileRef = ref(storage, `videos_thumbs/${Date.now()}_${compressedThumb.name}`);
-                
-                await uploadBytes(fileRef, compressedThumb);
-                const thumbUrl = await getDownloadURL(fileRef);
+                const compressed = await compressImage(rawThumb);
+                const { publicUrl, storagePath } = await uploadToStorage(supabase, compressed, 'portfolio');
 
-                // حفظ في قاعدة البيانات
-                await addDoc(collection(db, "projects"), {
+                // حفظ في جدول projects
+                const { error: insertErr } = await supabase.from('projects').insert([{
                     title,
                     category,
-                    videoUrl,
-                    thumbnailUrl: thumbUrl,
-                    mediaUrl: thumbUrl,
-                    mediaType: 'video',
-                    storagePath: fileRef.fullPath,
-                    createdAt: serverTimestamp()
-                });
+                    video_url: videoUrl,
+                    media_url: publicUrl,
+                    media_type: 'video'
+                }]);
+
+                if (insertErr) throw insertErr;
 
                 showToast('تمت إضافة الفيديو بنجاح! 🎬', 'success');
                 e.target.reset();
                 document.getElementById('video-preview-box').style.display = 'none';
                 document.getElementById('video-file-label').textContent = 'اضغط لاختيار صورة الغلاف';
+                loadData();
             } catch (err) {
                 console.error(err);
-                showToast(`خطأ: ${err.message}`, 'error');
+                showToast(`خطأ في الحفظ: ${err.message}`, 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-save"></i> نشر الفيديو فوراً';
@@ -1002,36 +1059,37 @@
         });
 
         // حذف عنصر
-        window.deleteItem = async (id, storagePath) => {
-            if (!confirm('هل تريد حذف هذا العنصر نهائياً من الموقع؟')) return;
+        window.deleteItem = async (id) => {
+            if (!confirm('هل تريد حذف هذا العنصر نهائياً؟')) return;
+            const supabase = getSupabaseClient();
+            if (!supabase) return;
+
             try {
-                await deleteDoc(doc(db, "projects", id));
-                if (storagePath) {
-                    try { await deleteObject(ref(storage, storagePath)); } catch(e){}
-                }
+                const { error } = await supabase.from('projects').delete().eq('id', id);
+                if (error) throw error;
                 showToast('تم الحذف بنجاح ✅', 'success');
+                loadData();
             } catch (err) {
                 showToast(`فشل الحذف: ${err.message}`, 'error');
             }
         };
 
-        // استماع فوري للبيانات وعرضها في التبويب المناسب
-        function initDataListeners() {
-            const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
-            onSnapshot(q, (snapshot) => {
-                const photos = [];
-                const videos = [];
+        // تحميل وعرض البيانات
+        async function loadData() {
+            const supabase = getSupabaseClient();
+            if (!supabase) return;
 
-                snapshot.forEach((d) => {
-                    const item = { id: d.id, ...d.data() };
-                    if (item.mediaType === 'video' || item.videoUrl) {
-                        videos.push(item);
-                    } else {
-                        photos.push(item);
-                    }
-                });
+            try {
+                const { data: projects, error } = await supabase
+                    .from('projects')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-                // تحديث العدادات
+                if (error) throw error;
+
+                const photos = (projects || []).filter(p => p.media_type !== 'video' && !p.video_url);
+                const videos = (projects || []).filter(p => p.media_type === 'video' || p.video_url);
+
                 document.getElementById('badge-photos-count').textContent = photos.length;
                 document.getElementById('badge-videos-count').textContent = videos.length;
 
@@ -1042,12 +1100,12 @@
                 } else {
                     photosList.innerHTML = photos.map(item => `
                         <div class="item-box">
-                            <img src="${item.mediaUrl}" class="item-thumb" alt="${item.title}" loading="lazy">
+                            <img src="${item.media_url}" class="item-thumb" alt="${item.title}" loading="lazy">
                             <div class="item-content">
                                 <span class="item-badge">${item.category || 'صورة'}</span>
                                 <h3 class="item-title">${item.title}</h3>
                                 <div class="item-footer">
-                                    <button class="btn-delete" onclick="window.deleteItem('${item.id}', '${item.storagePath || ''}')">
+                                    <button class="btn-delete" onclick="window.deleteItem('${item.id}')">
                                         <i class="fas fa-trash-alt"></i> حذف الصورة
                                     </button>
                                 </div>
@@ -1063,13 +1121,13 @@
                 } else {
                     videosList.innerHTML = videos.map(item => `
                         <div class="item-box">
-                            <img src="${item.thumbnailUrl || item.mediaUrl}" class="item-thumb" alt="${item.title}" loading="lazy">
+                            <img src="${item.media_url}" class="item-thumb" alt="${item.title}" loading="lazy">
                             <div class="item-content">
                                 <span class="item-badge" style="background:#fef3c7; color:#b45309;">${item.category || 'فيديو'}</span>
                                 <h3 class="item-title">${item.title}</h3>
                                 <div class="item-footer">
-                                    <a href="${item.videoUrl}" target="_blank" class="btn-watch"><i class="fas fa-play"></i> مشاهدة</a>
-                                    <button class="btn-delete" onclick="window.deleteItem('${item.id}', '${item.storagePath || ''}')">
+                                    <a href="${item.video_url}" target="_blank" class="btn-watch"><i class="fas fa-play"></i> مشاهدة</a>
+                                    <button class="btn-delete" onclick="window.deleteItem('${item.id}')">
                                         <i class="fas fa-trash-alt"></i> حذف
                                     </button>
                                 </div>
@@ -1077,13 +1135,14 @@
                         </div>
                     `).join('');
                 }
-            });
+            } catch (err) {
+                console.error("Error loading data from Supabase:", err);
+            }
         }
 
-        // إتاحة الدالة لبدء التحميل فور تسجيل الدخول
-        window.initDataListeners = initDataListeners;
-        if (window._needsDataInit || sessionStorage.getItem('karem_admin_auth') === '112003') {
-            initDataListeners();
+        window.initSupabaseData = loadData;
+        if (window._needsSupabaseInit || sessionStorage.getItem('karem_admin_auth') === '112003') {
+            loadData();
         }
     </script>
 </body>
