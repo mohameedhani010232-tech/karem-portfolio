@@ -271,6 +271,12 @@
             border: 1px solid #fde68a;
         }
 
+        .banner-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
         /* Tabs Nav */
         .tabs-nav {
             display: flex;
@@ -1087,6 +1093,9 @@
 
                 if (error) throw error;
 
+                statusBanner.className = 'banner banner-success';
+                statusText.innerHTML = `🟢 متصل بقاعدة بيانات <strong>Supabase</strong> السحابية بنجاح. أي إضافة أو حذف تنعكس فورياً على الموقع.`;
+
                 const photos = (projects || []).filter(p => p.media_type !== 'video' && !p.video_url);
                 const videos = (projects || []).filter(p => p.media_type === 'video' || p.video_url);
 
@@ -1137,6 +1146,10 @@
                 }
             } catch (err) {
                 console.error("Error loading data from Supabase:", err);
+                if (err.message && (err.message.includes("Could not find the table") || err.code === "PGRST205")) {
+                    statusBanner.className = 'banner banner-warning';
+                    statusText.innerHTML = `⚠️ باقي خطوة واحدة: جدول <code>projects</code> غير موجود بعد. انسخ كود SQL بالأسفل وشغّله في <a href="https://supabase.com/dashboard/project/wleiicvweesvptqwaeqs/sql/new" target="_blank" style="color:#b45309; text-decoration:underline; font-weight:bold;">Supabase SQL Editor</a>`;
+                }
             }
         }
 

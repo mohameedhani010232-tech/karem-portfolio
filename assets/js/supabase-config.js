@@ -5,10 +5,10 @@
  */
 
 // ============================================================================
-// ⚠️ ضع إعدادات مشروع Supabase الخاص بك هنا (من Settings > API في Supabase Dashboard)
+// ⚠️ إعدادات مشروع Supabase الخاص بك (ملف كارم)
 // ============================================================================
-export const SUPABASE_URL = "https://YOUR_PROJECT_ID.supabase.co";
-export const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+export const SUPABASE_URL = "https://wleiicvweesvptqwaeqs.supabase.co";
+export const SUPABASE_ANON_KEY = "sb_publishable_BoUgkQN-WDN-tnI2PY5-Ug_dGot4uiS";
 
 // فحص ما إذا تم إدخال البيانات الحقيقية
 export const isSupabaseConfigured = () => {

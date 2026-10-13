@@ -387,13 +387,19 @@
         }
 
         async function fetchProjects(supabase) {
-            const { data, error } = await supabase
-                .from('projects')
-                .select('*')
-                .order('created_at', { ascending: false });
+            try {
+                const { data, error } = await supabase
+                    .from('projects')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-            if (!error && data) {
-                renderProjects(data);
+                if (!error && data && data.length > 0) {
+                    renderProjects(data);
+                } else {
+                    fallbackFetch();
+                }
+            } catch (e) {
+                fallbackFetch();
             }
         }
 
