@@ -701,23 +701,19 @@
 </head>
 
 <body>
-    <!-- 1. Firebase Authentication Login Screen -->
+    <!-- 1. Password Login Screen -->
     <div id="login-overlay">
         <div class="login-card">
             <div class="login-icon-badge">
                 <i class="fas fa-lock"></i>
             </div>
-            <h2>لوحة إدارة المشاريع</h2>
-            <p>تسجيل دخول آمن بواسطة Firebase Authentication</p>
+            <h2>لوحة تحكم الموقع</h2>
+            <p>يرجى إدخال كلمة المرور لتسجيل الدخول</p>
 
             <form id="login-form">
                 <div class="login-input-group">
-                    <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" id="admin-email-input" placeholder="البريد الإلكتروني للآدمن" required autofocus>
-                </div>
-                <div class="login-input-group">
                     <i class="fas fa-key input-icon"></i>
-                    <input type="password" id="admin-password-input" placeholder="كلمة المرور" required>
+                    <input type="password" id="admin-password-input" placeholder="كلمة المرور" required autofocus>
                     <i class="fas fa-eye toggle-eye" id="toggle-password-eye"></i>
                 </div>
                 <button type="submit" id="login-submit-btn" class="login-btn">
@@ -986,71 +982,60 @@
             statusText.innerHTML = `⚠️ تنبيه: يرجى وضع مفاتيح مشروع Firebase الخاص بك في ملف <code style="background:white; padding:2px 6px; border-radius:4px;">assets/js/firebase-config.js</code> لتفعيل تسجيل الدخول ورفع الملفات وقاعدة البيانات.`;
         }
 
-        // 1. Firebase Authentication State Listener
-        if (auth) {
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    // Logged in
-                    loginOverlay.classList.add('hidden');
-                    adminDashboard.classList.remove('dashboard-hidden');
-                    adminUserDisplay.textContent = user.email || 'Admin';
-                    statusBanner.className = 'banner banner-info';
-                    statusText.innerHTML = `🟢 متصل بنجاح بقاعدة بيانات Firebase Firestore السحابية. التعديلات تنعكس فورياً.`;
-                    initRealtimeSync();
-                } else {
-                    // Logged out
-                    adminDashboard.classList.add('dashboard-hidden');
-                    loginOverlay.classList.remove('hidden');
-                    emailInput.focus();
-                }
-            });
+        // Master PIN
+        const ADMIN_PIN = "112003";
+
+        // Unlock Dashboard
+        function unlockDashboard() {
+            loginOverlay.classList.add('hidden');
+            adminDashboard.classList.remove('dashboard-hidden');
+            adminUserDisplay.textContent = 'المدير (كريم الورداني)';
+            statusBanner.className = 'banner banner-info';
+            statusText.innerHTML = `🟢 متصل بنجاح بقاعدة بيانات Firebase Firestore السحابية. التعديلات تنعكس فورياً على الموقع.`;
+            initRealtimeSync();
         }
 
-        // 2. Login Form Submission
-        loginForm.addEventListener('submit', async (e) => {
+        // Check if already authenticated in this session
+        function checkSavedAuth() {
+            if (sessionStorage.getItem('karem_admin_auth') === ADMIN_PIN) {
+                unlockDashboard();
+            } else {
+                loginOverlay.classList.remove('hidden');
+                passwordInput.focus();
+            }
+        }
+
+        // Login Form Submission (PIN: 112003)
+        loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = emailInput.value.trim();
-            const password = passwordInput.value;
+            const entered = passwordInput.value.trim();
 
-            if (!isFirebaseConfigured() || !auth) {
-                loginErrorMsg.style.display = 'block';
-                loginErrorMsg.textContent = 'Firebase غير مهيأ بعد! يرجى إدخال بيانات مشروع Firebase في assets/js/firebase-config.js';
-                return;
-            }
-
-            try {
-                loginBtn.disabled = true;
-                loginBtn.innerHTML = '<span class="loading-spinner"></span> جاري التحقق...';
+            if (entered === ADMIN_PIN) {
+                sessionStorage.setItem('karem_admin_auth', ADMIN_PIN);
                 loginErrorMsg.style.display = 'none';
-
-                await signInWithEmailAndPassword(auth, email, password);
+                unlockDashboard();
                 showToast('تم تسجيل الدخول بنجاح! مرحباً بك 👋', 'success');
-            } catch (err) {
-                console.error("Login error:", err);
+            } else {
                 loginErrorMsg.style.display = 'block';
-                if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
-                    loginErrorMsg.textContent = 'البريد الإلكتروني أو كلمة المرور غير صحيحة!';
-                } else if (err.code === 'auth/invalid-email') {
-                    loginErrorMsg.textContent = 'صيغة البريد الإلكتروني غير صالحة!';
-                } else {
-                    loginErrorMsg.textContent = `فشل تسجيل الدخول: ${err.message}`;
-                }
-            } finally {
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
+                loginErrorMsg.textContent = 'كلمة المرور غير صحيحة! حاول مرة أخرى.';
+                passwordInput.select();
             }
         });
 
-        // 3. Logout
-        logoutBtn.addEventListener('click', async () => {
+        // Logout
+        logoutBtn.addEventListener('click', () => {
             if (!confirm('هل تريد بالتأكيد تسجيل الخروج؟')) return;
-            try {
-                if (auth) await signOut(auth);
-                showToast('تم تسجيل الخروج بنجاح 👋', 'success');
-            } catch (err) {
-                console.error("Logout error:", err);
-            }
+            sessionStorage.removeItem('karem_admin_auth');
+            adminDashboard.classList.add('dashboard-hidden');
+            loginOverlay.classList.remove('hidden');
+            passwordInput.value = '';
+            loginErrorMsg.style.display = 'none';
+            passwordInput.focus();
+            showToast('تم تسجيل الخروج بنجاح 👋', 'success');
         });
+
+        // Initialize auth check on load
+        checkSavedAuth();
 
         // 4. Real-Time Sync of Projects
         function initRealtimeSync() {
