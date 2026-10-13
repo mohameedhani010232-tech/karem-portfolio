@@ -739,7 +739,102 @@
         <span id="toast-message">تمت العملية بنجاح</span>
     </div>
 
-    <!-- السكريبت السحابي فائق السرعة -->
+    <!-- 1. سكريبت الدخول السريع والفوري بدون أي انتظار -->
+    <script>
+        const ADMIN_PIN = "112003";
+
+        function unlockDashboard() {
+            const overlay = document.getElementById('login-overlay');
+            const dashboard = document.getElementById('admin-dashboard');
+            if (overlay) overlay.classList.add('hidden');
+            if (dashboard) dashboard.classList.remove('dashboard-hidden');
+            if (window.initDataListeners) {
+                window.initDataListeners();
+            } else {
+                window._needsDataInit = true;
+            }
+        }
+
+        // تبديل إظهار كلمة المرور
+        const toggleEye = document.getElementById('toggle-password-eye');
+        const passwordInput = document.getElementById('admin-password-input');
+        if (toggleEye && passwordInput) {
+            toggleEye.addEventListener('click', () => {
+                const isPass = passwordInput.type === 'password';
+                passwordInput.type = isPass ? 'text' : 'password';
+                toggleEye.className = isPass ? 'fas fa-eye-slash toggle-eye' : 'fas fa-eye toggle-eye';
+            });
+        }
+
+        // فحص الجلسة عند فتح الصفحة
+        if (sessionStorage.getItem('karem_admin_auth') === ADMIN_PIN) {
+            unlockDashboard();
+        }
+
+        // تسجيل الدخول
+        const loginForm = document.getElementById('login-form');
+        const loginErrorMsg = document.getElementById('login-error-msg');
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const entered = (passwordInput ? passwordInput.value : '').trim();
+                if (entered === ADMIN_PIN) {
+                    sessionStorage.setItem('karem_admin_auth', ADMIN_PIN);
+                    if (loginErrorMsg) loginErrorMsg.style.display = 'none';
+                    unlockDashboard();
+                    showToast('تم تسجيل الدخول بنجاح! مرحباً بك 👋', 'success');
+                } else {
+                    if (loginErrorMsg) {
+                        loginErrorMsg.style.display = 'block';
+                        loginErrorMsg.textContent = 'كلمة المرور غير صحيحة! حاول ثانية.';
+                    }
+                    if (passwordInput) passwordInput.select();
+                }
+            });
+        }
+
+        // تسجيل الخروج
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                if (!confirm('هل تريد تسجيل الخروج؟')) return;
+                sessionStorage.removeItem('karem_admin_auth');
+                const overlay = document.getElementById('login-overlay');
+                const dashboard = document.getElementById('admin-dashboard');
+                if (dashboard) dashboard.classList.add('dashboard-hidden');
+                if (overlay) overlay.classList.remove('hidden');
+                if (passwordInput) {
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+            });
+        }
+
+        // التبديل بين تبويب الصور والفيديوهات
+        window.switchTab = (tab) => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+
+            if (tab === 'photos') {
+                document.getElementById('tab-btn-photos').classList.add('active');
+                document.getElementById('pane-photos').classList.add('active');
+            } else {
+                document.getElementById('tab-btn-videos').classList.add('active');
+                document.getElementById('pane-videos').classList.add('active');
+            }
+        };
+
+        // إظهار التوست
+        window.showToast = (msg, type = 'success') => {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.className = `toast ${type} show`;
+            document.getElementById('toast-message').textContent = msg;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        };
+    </script>
+
+    <!-- 2. السكريبت السحابي لرفع الصور وإدارة Firebase -->
     <script type="module">
         import { 
             db, 
@@ -757,72 +852,6 @@
             getDownloadURL,
             deleteObject
         } from "./assets/js/firebase-config.js";
-
-        const ADMIN_PIN = "112003";
-
-        // عناصر تسجيل الدخول
-        const loginOverlay = document.getElementById('login-overlay');
-        const loginForm = document.getElementById('login-form');
-        const passwordInput = document.getElementById('admin-password-input');
-        const toggleEye = document.getElementById('toggle-password-eye');
-        const loginErrorMsg = document.getElementById('login-error-msg');
-        const dashboard = document.getElementById('admin-dashboard');
-
-        // تبديل إظهار كلمة المرور
-        toggleEye.addEventListener('click', () => {
-            const isPass = passwordInput.type === 'password';
-            passwordInput.type = isPass ? 'text' : 'password';
-            toggleEye.className = isPass ? 'fas fa-eye-slash toggle-eye' : 'fas fa-eye toggle-eye';
-        });
-
-        // تسجيل الدخول
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (passwordInput.value.trim() === ADMIN_PIN) {
-                sessionStorage.setItem('karem_admin_auth', ADMIN_PIN);
-                unlockDashboard();
-                showToast('تم تسجيل الدخول بنجاح! مرحباً بك 👋', 'success');
-            } else {
-                loginErrorMsg.style.display = 'block';
-                loginErrorMsg.textContent = 'كلمة المرور غير صحيحة! حاول ثانية.';
-                passwordInput.select();
-            }
-        });
-
-        function unlockDashboard() {
-            loginOverlay.classList.add('hidden');
-            dashboard.classList.remove('dashboard-hidden');
-            initDataListeners();
-        }
-
-        // فحص الجلسة عند فتح الصفحة
-        if (sessionStorage.getItem('karem_admin_auth') === ADMIN_PIN) {
-            unlockDashboard();
-        }
-
-        // تسجيل الخروج
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            if (!confirm('هل تريد تسجيل الخروج؟')) return;
-            sessionStorage.removeItem('karem_admin_auth');
-            dashboard.classList.add('dashboard-hidden');
-            loginOverlay.classList.remove('hidden');
-            passwordInput.value = '';
-            passwordInput.focus();
-        });
-
-        // التبديل بين الصور والفيديوهات
-        window.switchTab = (tab) => {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-
-            if (tab === 'photos') {
-                document.getElementById('tab-btn-photos').classList.add('active');
-                document.getElementById('pane-photos').classList.add('active');
-            } else {
-                document.getElementById('tab-btn-videos').classList.add('active');
-                document.getElementById('pane-videos').classList.add('active');
-            }
-        };
 
         // دالة ضغط الصور لتصبح فائقة السرعة (Instant Client-side Compression)
         async function compressImage(file, maxWidth = 1280, quality = 0.8) {
@@ -1051,12 +1080,10 @@
             });
         }
 
-        // إظهار التوست
-        function showToast(msg, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.className = `toast ${type} show`;
-            document.getElementById('toast-message').textContent = msg;
-            setTimeout(() => toast.classList.remove('show'), 3000);
+        // إتاحة الدالة لبدء التحميل فور تسجيل الدخول
+        window.initDataListeners = initDataListeners;
+        if (window._needsDataInit || sessionStorage.getItem('karem_admin_auth') === '112003') {
+            initDataListeners();
         }
     </script>
 </body>

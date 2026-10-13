@@ -30,6 +30,7 @@ import {
 import { 
     getStorage, 
     ref, 
+    uploadBytes,
     uploadBytesResumable, 
     getDownloadURL, 
     deleteObject 
@@ -97,6 +98,7 @@ export {
     serverTimestamp,
     // Storage functions
     ref,
+    uploadBytes,
     uploadBytesResumable,
     getDownloadURL,
     deleteObject
